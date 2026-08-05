@@ -1,43 +1,54 @@
-# Graph Database Benchmark
+# Graph Benchmark
 
-## Database
+## Project Overview
 
-CognoDB
+This project benchmarks CognoDB using the Pokec dataset.
 
 ## Dataset
 
-sample_5000.csv
+- Dataset: Pokec social network
+- Sample size: 100000 relationships
+- Database: CognoDB
 
-## Dataset Source
+## Folder Structure
 
-SNAP Pokec social network dataset
+graph-benchmark/
+
+- data/
+- scripts/
+- results/
+
+## Setup
+
+1. Install Python.
+2. Install dependencies:
+
+```bash
+pip install neo4j pandas
+```
+
+3. Run:
+
+```bash
+python scripts/connect_cognodb.py
+```
+
+4. Run benchmark:
+
+```bash
+python scripts/benchmark.py
+```
 
 ## Results
 
-- Nodes: 83
-- Relationships: 351
-- Execution time: 1.34 seconds
+| Query | Time (ms) |
+|---|---:|
+| count_nodes | 1417.49 |
+| count_relationships | 260.68 |
+| one_hop | 261.88 |
 
-## Queries
+## Analysis
 
-### Count nodes
-
-```cypher
-MATCH (n)
-RETURN count(n);
-```
-
-### Count relationships
-
-```cypher
-MATCH ()-[r]->()
-RETURN count(r);
-```
-
-### Find connected users
-
-```cypher
-MATCH (u)-[]->(v)
-WHERE id(u)=2
-RETURN v;
-```
+- Node counting takes more time.
+- Relationship queries are faster.
+- One-hop traversal performs efficiently in CognoDB.
