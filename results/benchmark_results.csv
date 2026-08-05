@@ -1,2 +1,4 @@
-"Database,Nodes,Relationships,Execution_Time"
-"CognoDB,83,351,1.34"
+"Query,Execution_Time_ms"
+"count_nodes,1417.49"
+"count_relationships,260.68"
+"one_hop,261.88"
