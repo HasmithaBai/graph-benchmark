@@ -10,25 +10,42 @@ driver = GraphDatabase.driver(
     auth=(USERNAME, PASSWORD)
 )
 
-query = """
-MATCH (u)-[r]->(v)
-WHERE id(u) = 2
-RETURN id(v) AS connected_user
-LIMIT 20
-"""
+queries = {
+    "count_nodes": """
+        MATCH (n)
+        RETURN count(n)
+    """,
 
-start = time.time()
+    "count_relationships": """
+        MATCH ()-[r]->()
+        RETURN count(r)
+    """,
+
+    "one_hop": """
+        MATCH (u)-[]->(v)
+        WHERE id(u)=2
+        RETURN v
+        LIMIT 20
+    """
+}
 
 with driver.session() as session:
-    result = session.run(query)
 
-    print("Connected users:")
+    for name, query in queries.items():
 
-    for record in result:
-        print(record["connected_user"])
+        start = time.time()
 
-end = time.time()
+        result = session.run(query)
 
-print("Execution time:", end - start, "seconds")
+        list(result)
+
+        end = time.time()
+
+        print(
+            name,
+            ":",
+            round((end - start) * 1000, 2),
+            "ms"
+        )
 
 driver.close()
