@@ -1,6 +1,7 @@
 from neo4j import GraphDatabase
 import time
 import csv
+import numpy as np
 
 # Connection details
 
@@ -67,23 +68,29 @@ with driver.session() as session:
 
     for name, query in queries.items():
 
+        latencies = []
+
         try:
 
-            start_time = time.time()
+            for i in range(10):
 
-            session.run(query).data()
+                start_time = time.time()
 
-            end_time = time.time()
+                session.run(query).data()
 
-            execution_time = round(
-                (end_time - start_time) * 1000,
-                2
-            )
+                end_time = time.time()
 
-            print(f"{name}: {execution_time} ms")
+                latency = (end_time - start_time) * 1000
+
+                latencies.append(latency)
+
+            p50 = round(np.percentile(latencies, 50), 2)
+            p95 = round(np.percentile(latencies, 95), 2)
+
+            print(f"{name}: p50 = {p50} ms, p95 = {p95} ms")
 
             results.append(
-                [name, execution_time]
+                [name, p50, p95]
             )
 
         except Exception:
@@ -91,7 +98,7 @@ with driver.session() as session:
             print(f"{name}: FAILED")
 
             results.append(
-                [name, "FAILED"]
+                [name, "FAILED", "FAILED"]
             )
 
 # Save results
@@ -105,7 +112,7 @@ with open(
     writer = csv.writer(file)
 
     writer.writerow(
-        ["Query", "Time_ms"]
+        ["Query", "P50_ms", "P95_ms"]
     )
 
     writer.writerows(results)
