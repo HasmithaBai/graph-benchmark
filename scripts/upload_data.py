@@ -1,9 +1,9 @@
 from neo4j import GraphDatabase
 import pandas as pd
 
-URI = "bolt+s://db-0317f2e2.databases.cognodb.com"
-USERNAME = "cognodb"
-PASSWORD = "8601477ce8fc1c46a6291e0b19d4c6f7"
+URI = "YOUR_DATABASE_URI"
+USERNAME = "YOUR_USERNAME"
+PASSWORD = "YOUR_PASSWORD"
 
 driver = GraphDatabase.driver(
     URI,
