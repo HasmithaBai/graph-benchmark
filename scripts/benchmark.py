@@ -5,9 +5,9 @@ import numpy as np
 
 # Connection details
 
-URI = "bolt+s://db-0317f2e2.databases.cognodb.com"
-USERNAME = "cognodb"
-PASSWORD = "8601477ce8fc1c46a6291e0b19d4c6f7"
+URI = "YOUR_COGNODB_URI"
+USERNAME = "YOUR_COGNODB_USERNAME"
+PASSWORD = "YOUR_COGNODB_PASSWORD"
 
 driver = GraphDatabase.driver(
     URI,
