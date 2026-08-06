@@ -1,5 +1,10 @@
 Database: CognoDB
-Dataset: sample_5000.csv
-Nodes: 83
-Relationships: 351
-Execution time: 1.34 seconds
+Dataset: sample_100000.csv
+Nodes: 2857
+Relationships: 4410
+
+Benchmark Results
+
+count_nodes: 1471.37 ms
+count_relationships: 251.97 ms
+one_hop: 1362.46 ms
