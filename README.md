@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project benchmarks CognoDB and Neo4j using the SNAP soc-Pokec social network dataset.
+This project benchmarks CognoDB, Neo4j, Memgraph, and FalkorDB using the SNAP soc-Pokec social network dataset.
 
 ---
 
@@ -12,15 +12,18 @@ This project benchmarks CognoDB and Neo4j using the SNAP soc-Pokec social networ
 - Sample size: 100000 relationships
 - Nodes loaded: 49685
 - Relationships loaded: 100001
-- Databases: CognoDB and Neo4j
+- Databases compared:
+
+  - CognoDB
+  - Neo4j
+  - Memgraph
+  - FalkorDB
 
 ---
 
 ## Dataset Source
 
 Source: SNAP soc-Pokec social network dataset
-
-Link:
 
 https://snap.stanford.edu/data/soc-Pokec.html
 
@@ -31,33 +34,45 @@ https://snap.stanford.edu/data/soc-Pokec.html
 
 ## Folder Structure
 
+```text
 graph-benchmark/
 
-- data/
-  - sample_5000.csv
-  - sample_100000.csv
+├── data/
+│   ├── sample_5000.csv
+│   └── sample_100000.csv
 
-- scripts/
-  - benchmark.py
-  - neo4j_benchmark.py
-  - connect_cognodb.py
-  - upload_data.py
-  - neo4j_upload.py
-  - create_sample.py
+├── scripts/
+│   ├── benchmark.py
+│   ├── connect_cognodb.py
+│   ├── upload_data.py
+│   ├── neo4j_upload.py
+│   ├── neo4j_benchmark.py
+│   ├── memgraph_upload.py
+│   ├── memgraph_benchmark.py
+│   ├── falkordb_upload.py
+│   ├── falkordb_benchmark.py
+│   └── create_sample.py
 
-- results/
-  - benchmark_results.csv
-  - neo4j_benchmark_results.csv
-  - cognodb_results.txt
+├── results/
+│   ├── benchmark_results.csv
+│   ├── cognodb_results.txt
+│   ├── neo4j_benchmark_results.csv
+│   ├── memgraph_benchmark_results.csv
+│   └── falkordb_benchmark_results.csv
+
+├── README.md
+├── requirements.txt
+└── .gitignore
+```
 
 ---
 
 ## Setup
 
-### 1. Install Python packages
+### 1. Install dependencies
 
 ```bash
-pip install neo4j pandas numpy
+pip install neo4j pandas numpy redis
 ```
 
 ### 2. Connect to CognoDB
@@ -88,6 +103,30 @@ python scripts/neo4j_upload.py
 
 ```bash
 python scripts/neo4j_benchmark.py
+```
+
+### 7. Upload data to Memgraph
+
+```bash
+python scripts/memgraph_upload.py
+```
+
+### 8. Run Memgraph benchmark
+
+```bash
+python scripts/memgraph_benchmark.py
+```
+
+### 9. Upload data to FalkorDB
+
+```bash
+python scripts/falkordb_upload.py
+```
+
+### 10. Run FalkorDB benchmark
+
+```bash
+python scripts/falkordb_benchmark.py
 ```
 
 ---
@@ -175,14 +214,43 @@ RETURN count(n);
 
 ---
 
+## Memgraph Results
+
+| Query | P50 (ms) | P95 (ms) |
+| --- | ---: | ---: |
+| count_nodes | 12.17 | 40.92 |
+| count_relationships | 27.04 | 43.15 |
+| one_hop | 23.11 | 24.55 |
+| two_hop | 22.96 | 25.30 |
+| three_hop | 25.31 | 32.87 |
+| point_lookup | 2.95 | 3.23 |
+| aggregation | 12.10 | 13.67 |
+
+---
+
+## FalkorDB Results
+
+| Query | P50 (ms) | P95 (ms) |
+| --- | ---: | ---: |
+| count_nodes | 2.36 | 19.00 |
+| count_relationships | 2.58 | 3.08 |
+| one_hop | 38.13 | 64.50 |
+| two_hop | 37.44 | 38.98 |
+| three_hop | 39.23 | 41.64 |
+| point_lookup | 2.23 | 2.93 |
+| aggregation | 2.53 | 2.94 |
+
+---
+
 ## Analysis
 
 - CognoDB successfully loaded the dataset.
 - Neo4j successfully loaded the dataset.
-- Neo4j completed three-hop traversal successfully.
-- CognoDB timed out during three-hop traversal.
-- Neo4j performed faster in point lookup and aggregation queries.
-- P50 and P95 latencies were measured using 10 iterations.
+- Memgraph successfully loaded the dataset.
+- FalkorDB successfully loaded the dataset.
+- CognoDB failed during three-hop traversal.
+- Memgraph showed the fastest point lookup performance.
+- FalkorDB showed excellent aggregation performance.
 
 ---
 
@@ -190,7 +258,12 @@ RETURN count(n);
 
 - Operating System: Windows 11
 - Language: Python 3
-- Libraries: neo4j, pandas, numpy
+- Libraries:
+
+  - neo4j
+  - pandas
+  - numpy
+  - redis
 
 ---
 
@@ -198,8 +271,10 @@ RETURN count(n);
 
 | Database | CPU | RAM | Storage |
 | --- | --- | --- | --- |
-| CognoDB Free Tier | 0.5 vCPU | 256 MB | 1 GB |
+| CognoDB | 0.5 vCPU | 256 MB | 1 GB |
 | Neo4j Aura | 1 vCPU | 1 GB | 2 GB |
+| Memgraph | 1 vCPU | 1 GB | 2 GB |
+| FalkorDB | 1 vCPU | 1 GB | 2 GB |
 
 ---
 
@@ -207,11 +282,11 @@ RETURN count(n);
 
 1. Downloaded the SNAP soc-Pokec dataset.
 2. Created a sample dataset with 100000 relationships.
-3. Connected to CognoDB and Neo4j using the Neo4j Python driver.
+3. Connected to each database.
 4. Uploaded data in batches of 1000 rows.
 5. Executed benchmark queries.
 6. Ran each query 10 times.
-7. Calculated P50 and P95 latency.
+7. Calculated P50 and P95 latencies.
 8. Recorded the results.
 
 ---
@@ -221,15 +296,14 @@ RETURN count(n);
 - Benchmarks were executed on free-tier instances.
 - Network latency may affect the results.
 - CognoDB failed during three-hop traversal.
-- Neo4j and CognoDB use different hardware configurations.
+- Hardware configurations may vary.
 - P50 and P95 values were calculated using 10 iterations.
 
 ---
 
 ## Future Work
 
-- Compare with Memgraph.
-- Compare with FalkorDB.
 - Compare with Dgraph.
 - Add concurrent read/write workloads.
-- Create benchmark charts.
+- Add benchmark charts.
+- Benchmark larger datasets.
