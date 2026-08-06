@@ -5,9 +5,9 @@ import numpy as np
 
 # Neo4j connection details
 
-URI = "neo4j+s://109ab702.databases.neo4j.io"
-USERNAME = "neo4j"
-PASSWORD = "zFU2P5TL00UPI-VE1SMfbkBul80wmx31RcaCuocCqHE"
+URI = "YOUR_NEO4J_URI"
+USERNAME = "YOUR_NEO4J_USERNAME"
+PASSWORD = "YOUR_NEO4J_PASSWORD"
 
 driver = GraphDatabase.driver(
     URI,
