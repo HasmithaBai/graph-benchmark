@@ -1,0 +1,8 @@
+Query,P50_ms,P95_ms
+count_nodes,12.17,40.92
+count_relationships,27.04,43.15
+one_hop,23.11,24.55
+two_hop,22.96,25.3
+three_hop,25.31,32.87
+point_lookup,2.95,3.23
+aggregation,12.1,13.67
