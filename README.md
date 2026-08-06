@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project benchmarks CognoDB, Neo4j, Memgraph, and FalkorDB using the SNAP soc-Pokec social network dataset.
+This project benchmarks CognoDB, Neo4j, Memgraph, FalkorDB, and Dgraph using the SNAP soc-Pokec social network dataset.
 
 ---
 
@@ -13,11 +13,11 @@ This project benchmarks CognoDB, Neo4j, Memgraph, and FalkorDB using the SNAP so
 - Nodes loaded: 49685
 - Relationships loaded: 100001
 - Databases compared:
-
   - CognoDB
   - Neo4j
   - Memgraph
   - FalkorDB
+  - Dgraph
 
 ---
 
@@ -51,6 +51,8 @@ graph-benchmark/
 │   ├── memgraph_benchmark.py
 │   ├── falkordb_upload.py
 │   ├── falkordb_benchmark.py
+│   ├── dgraph_upload.py
+│   ├── dgraph_benchmark.py
 │   └── create_sample.py
 
 ├── results/
@@ -58,7 +60,8 @@ graph-benchmark/
 │   ├── cognodb_results.txt
 │   ├── neo4j_benchmark_results.csv
 │   ├── memgraph_benchmark_results.csv
-│   └── falkordb_benchmark_results.csv
+│   ├── falkordb_benchmark_results.csv
+│   └── dgraph_benchmark_results.csv
 
 ├── README.md
 ├── requirements.txt
@@ -72,7 +75,7 @@ graph-benchmark/
 ### 1. Install dependencies
 
 ```bash
-pip install neo4j pandas numpy redis
+pip install neo4j pandas numpy redis pydgraph
 ```
 
 ### 2. Connect to CognoDB
@@ -127,6 +130,18 @@ python scripts/falkordb_upload.py
 
 ```bash
 python scripts/falkordb_benchmark.py
+```
+
+### 11. Upload data to Dgraph
+
+```bash
+python scripts/dgraph_upload.py
+```
+
+### 12. Run Dgraph benchmark
+
+```bash
+python scripts/dgraph_benchmark.py
 ```
 
 ---
@@ -242,15 +257,26 @@ RETURN count(n);
 
 ---
 
+## Dgraph Results
+
+| Query | P50 (ms) | P95 (ms) |
+| --- | ---: | ---: |
+| count_nodes | 386.48 | 458.54 |
+| point_lookup | 3.24 | 7.73 |
+
+---
+
 ## Analysis
 
 - CognoDB successfully loaded the dataset.
 - Neo4j successfully loaded the dataset.
 - Memgraph successfully loaded the dataset.
 - FalkorDB successfully loaded the dataset.
+- Dgraph successfully loaded the dataset.
 - CognoDB failed during three-hop traversal.
 - Memgraph showed the fastest point lookup performance.
 - FalkorDB showed excellent aggregation performance.
+- Dgraph showed fast point lookup performance.
 
 ---
 
@@ -259,11 +285,11 @@ RETURN count(n);
 - Operating System: Windows 11
 - Language: Python 3
 - Libraries:
-
   - neo4j
   - pandas
   - numpy
   - redis
+  - pydgraph
 
 ---
 
@@ -275,6 +301,7 @@ RETURN count(n);
 | Neo4j Aura | 1 vCPU | 1 GB | 2 GB |
 | Memgraph | 1 vCPU | 1 GB | 2 GB |
 | FalkorDB | 1 vCPU | 1 GB | 2 GB |
+| Dgraph | 1 vCPU | 1 GB | 2 GB |
 
 ---
 
@@ -303,7 +330,7 @@ RETURN count(n);
 
 ## Future Work
 
-- Compare with Dgraph.
 - Add concurrent read/write workloads.
 - Add benchmark charts.
 - Benchmark larger datasets.
+- Increase benchmark iterations from 10 to 100.
