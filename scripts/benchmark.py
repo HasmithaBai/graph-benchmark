@@ -45,10 +45,23 @@ queries = {
     WHERE id(u) = 2
     RETURN count(v)
     LIMIT 5
+    """,
+
+    "point_lookup": """
+    MATCH (n)
+    RETURN n
+    LIMIT 1
+    """,
+
+    "aggregation": """
+    MATCH (n)
+    RETURN count(n)
     """
 }
 
 results = []
+
+print("Benchmark started...")
 
 with driver.session() as session:
 
@@ -73,7 +86,7 @@ with driver.session() as session:
                 [name, execution_time]
             )
 
-        except Exception as e:
+        except Exception:
 
             print(f"{name}: FAILED")
 
