@@ -93,7 +93,7 @@ LIMIT 20;
 ## Results
 
 | Query | Time (ms) |
-| --- | ---: |
+|--------|--------:|
 | count_nodes | 1471.37 |
 | count_relationships | 251.97 |
 | one_hop | 1362.46 |
@@ -111,3 +111,35 @@ LIMIT 20;
 - Language: Python 3
 - Database: CognoDB
 - Libraries: neo4j, pandas
+
+## Instance Specifications
+
+| Database | CPU | RAM | Storage |
+|----------|----------|----------|----------|
+| CognoDB Free Tier | 0.5 vCPU | 256 MB | 1 GB |
+
+## Methodology
+
+1. Downloaded the SNAP soc-Pokec dataset.
+2. Created a sample dataset with 100000 relationships.
+3. Connected to CognoDB using the Neo4j Python driver.
+4. Uploaded data in batches of 1000 rows.
+5. Executed benchmark queries.
+6. Measured execution time in milliseconds.
+7. Recorded the results.
+
+## Caveats
+
+- Benchmarks were executed on the CognoDB free tier.
+- Network latency may affect results.
+- Only CognoDB has been benchmarked so far.
+- Additional graph databases are pending comparison.
+- Free-tier limitations may affect performance.
+
+## Future Work
+
+- Compare CognoDB with Neo4j Aura, Memgraph, FalkorDB and Dgraph.
+- Add 2-hop and 3-hop traversal benchmarks.
+- Measure p50 and p95 latency.
+- Add concurrent read/write workload tests.
+- Create charts for benchmark results.

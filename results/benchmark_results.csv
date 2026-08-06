@@ -1,4 +1,4 @@
-"Query,Execution_Time_ms"
-"count_nodes,1417.49"
-"count_relationships,260.68"
-"one_hop,261.88"
+"Query,Time_ms"
+"count_nodes,1471.37"
+"count_relationships,251.97"
+"one_hop,1362.46"
