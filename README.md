@@ -34,7 +34,7 @@ graph-benchmark/
 ├── data/
 │   ├── sample_5000.csv
 │   └── sample_100000.csv
-
+│
 ├── scripts/
 │   ├── benchmark.py
 │   ├── connect_cognodb.py
@@ -48,18 +48,18 @@ graph-benchmark/
 │   ├── dgraph_upload.py
 │   ├── dgraph_benchmark.py
 │   └── create_sample.py
-
+│
 ├── results/
 │   ├── benchmark_results.csv
 │   ├── neo4j_benchmark_results.csv
 │   ├── memgraph_benchmark_results.csv
 │   ├── falkordb_benchmark_results.csv
 │   └── dgraph_benchmark_results.csv
-
+│
 ├── charts/
 │   ├── count_nodes.png
 │   └── point_lookup.png
-
+│
 ├── README.md
 ├── requirements.txt
 └── .gitignore
@@ -75,7 +75,9 @@ graph-benchmark/
 pip install neo4j pandas numpy redis pydgraph matplotlib
 ```
 
-## Upload data
+---
+
+# Upload Data
 
 ### CognoDB
 
@@ -145,21 +147,21 @@ python scripts/dgraph_benchmark.py
 
 # Benchmark Queries
 
-## Count nodes
+## Count Nodes
 
 ```cypher
 MATCH (n)
 RETURN count(n);
 ```
 
-## Count relationships
+## Count Relationships
 
 ```cypher
 MATCH ()-[r]->()
 RETURN count(r);
 ```
 
-## One-hop traversal
+## One-Hop Traversal
 
 ```cypher
 MATCH (u)-[]->(v)
@@ -167,7 +169,7 @@ RETURN v
 LIMIT 20;
 ```
 
-## Two-hop traversal
+## Two-Hop Traversal
 
 ```cypher
 MATCH (u)-[]->()-[]->(v)
@@ -175,14 +177,14 @@ RETURN v
 LIMIT 20;
 ```
 
-## Three-hop traversal
+## Three-Hop Traversal
 
 ```cypher
 MATCH (u)-[]->()-[]->()-[]->(v)
 RETURN count(v);
 ```
 
-## Point lookup
+## Point Lookup
 
 ```cypher
 MATCH (n)
@@ -229,31 +231,38 @@ RETURN count(n);
 
 # Memgraph Results
 
-Update from:
-
-```text
-results/memgraph_benchmark_results.csv
-```
+| Query | P50 (ms) | P95 (ms) |
+|---|---:|---:|
+| count_nodes | 12.17 | 40.92 |
+| count_relationships | 27.04 | 43.15 |
+| one_hop | 23.11 | 24.55 |
+| two_hop | 22.96 | 25.30 |
+| three_hop | 25.31 | 32.87 |
+| point_lookup | 2.95 | 3.23 |
+| aggregation | 12.10 | 13.67 |
 
 ---
 
 # FalkorDB Results
 
-Update from:
-
-```text
-results/falkordb_benchmark_results.csv
-```
+| Query | P50 (ms) | P95 (ms) |
+|---|---:|---:|
+| count_nodes | 2.36 | 19.00 |
+| count_relationships | 2.58 | 3.08 |
+| one_hop | 38.13 | 64.50 |
+| two_hop | 37.44 | 38.98 |
+| three_hop | 39.23 | 41.64 |
+| point_lookup | 2.23 | 2.93 |
+| aggregation | 2.53 | 2.94 |
 
 ---
 
 # Dgraph Results
 
-Update from:
-
-```text
-results/dgraph_benchmark_results.csv
-```
+| Query | P50 (ms) | P95 (ms) |
+|---|---:|---:|
+| count_nodes | 386.48 | 458.54 |
+| point_lookup | 3.24 | 7.73 |
 
 ---
 
@@ -268,6 +277,7 @@ results/dgraph_benchmark_results.csv
 - FalkorDB showed strong aggregation performance.
 - Dgraph showed efficient point lookup performance.
 - Free-tier limitations affected benchmark results.
+- Exact hardware parity was not possible across all free-tier databases, so the results should be interpreted with that limitation in mind.
 
 ---
 
@@ -275,14 +285,15 @@ results/dgraph_benchmark_results.csv
 
 - Operating System: Windows 11
 - Language: Python 3
-- Libraries:
 
-  - neo4j
-  - pandas
-  - numpy
-  - redis
-  - pydgraph
-  - matplotlib
+Libraries:
+
+- neo4j
+- pandas
+- numpy
+- redis
+- pydgraph
+- matplotlib
 
 ---
 
@@ -296,6 +307,8 @@ results/dgraph_benchmark_results.csv
 | FalkorDB | 1 vCPU | 1 GB | 2 GB |
 | Dgraph | 1 vCPU | 1 GB | 2 GB |
 
+**Note:** Exact hardware parity was not possible across all free-tier databases. The closest available configurations were used.
+
 ---
 
 # Methodology
@@ -304,9 +317,9 @@ results/dgraph_benchmark_results.csv
 2. Created a sample dataset with 100000 relationships.
 3. Loaded the same dataset into all databases.
 4. Uploaded data in batches of 1000 rows.
-5. Warmed up each database before benchmarking.
+5. Warmed up each database with 10 queries before benchmarking.
 6. Ran each query 100 times.
-7. Calculated p50 and p95 latency.
+7. Calculated p50 and p95 latencies.
 8. Recorded benchmark results.
 
 ---
