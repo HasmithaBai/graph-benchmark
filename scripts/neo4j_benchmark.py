@@ -6,9 +6,9 @@ import os
 
 # Neo4j connection details
 
-URI = "neo4j+s://109ab702.databases.neo4j.io"
-USERNAME = "neo4j"
-PASSWORD = "zFU2P5TL00UPI-VE1SMfbkBul80wmx31RcaCuocCqHE"
+set DATABASE_URI=neo4j+s://109ab702.databases.neo4j.io
+set DATABASE_USERNAME=neo4j
+set DATABASE_PASSWORD=YOUR_NEO4J_PASSWORD
 
 driver = GraphDatabase.driver(
     URI,
