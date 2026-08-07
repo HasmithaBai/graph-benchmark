@@ -1,3 +1,5 @@
 Query,P50_ms,P95_ms
-count_nodes,386.48,458.54
-point_lookup,3.24,7.73
+count_nodes,12.58,17.43
+point_lookup,5.05,7.23
+indexed_lookup,5.22,11.55
+aggregation,253.54,489.64

@@ -3,6 +3,8 @@ import time
 import csv
 import numpy as np
 
+# Connect to FalkorDB
+
 client = Redis(
     host="localhost",
     port=6379,
@@ -11,7 +13,10 @@ client = Redis(
 
 graph_name = "benchmark"
 
+# Queries
+
 queries = {
+
     "count_nodes":
         "MATCH (n) RETURN count(n)",
 
@@ -19,16 +24,19 @@ queries = {
         "MATCH ()-[r]->() RETURN count(r)",
 
     "one_hop":
-        "MATCH (u {id: 2})-[]->(v) RETURN count(v)",
+        "MATCH (u)-[]->(v) RETURN count(v) LIMIT 20",
 
     "two_hop":
-        "MATCH (u {id: 2})-[]->()-[]->(v) RETURN count(v)",
+        "MATCH (u)-[]->()-[]->(v) RETURN count(v) LIMIT 20",
 
     "three_hop":
-        "MATCH (u {id: 2})-[]->()-[]->()-[]->(v) RETURN count(v)",
+        "MATCH (u)-[]->()-[]->()-[]->(v) RETURN count(v) LIMIT 5",
 
     "point_lookup":
         "MATCH (n) RETURN n LIMIT 1",
+
+    "indexed_lookup":
+        "MATCH (u:User {id:100}) RETURN u",
 
     "aggregation":
         "MATCH (n) RETURN count(n)"
@@ -36,7 +44,23 @@ queries = {
 
 results = []
 
-print("FalkorDB benchmark started...")
+print("FalkorDB benchmark started...\n")
+
+# Warm-up
+
+print("Running warm-up queries...\n")
+
+for query in queries.values():
+
+    for _ in range(10):
+
+        client.execute_command(
+            "GRAPH.QUERY",
+            graph_name,
+            query
+        )
+
+# Benchmark
 
 for name, query in queries.items():
 
@@ -44,9 +68,9 @@ for name, query in queries.items():
 
     try:
 
-        for i in range(100):
+        for _ in range(100):
 
-            start = time.time()
+            start_time = time.time()
 
             client.execute_command(
                 "GRAPH.QUERY",
@@ -54,9 +78,11 @@ for name, query in queries.items():
                 query
             )
 
-            end = time.time()
+            end_time = time.time()
 
-            latencies.append((end - start) * 1000)
+            latency = (end_time - start_time) * 1000
+
+            latencies.append(latency)
 
         p50 = round(np.percentile(latencies, 50), 2)
         p95 = round(np.percentile(latencies, 95), 2)

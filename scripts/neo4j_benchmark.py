@@ -6,9 +6,9 @@ import os
 
 # Neo4j connection details
 
-URI = "YOUR_NEO4J_URI"
-USERNAME = "YOUR_NEO4J_USERNAME"
-PASSWORD = "YOUR_NEO4J_PASSWORD"
+URI = "neo4j+s://109ab702.databases.neo4j.io"
+USERNAME = "neo4j"
+PASSWORD = "zFU2P5TL00UPI-VE1SMfbkBul80wmx31RcaCuocCqHE"
 
 driver = GraphDatabase.driver(
     URI,
@@ -18,6 +18,7 @@ driver = GraphDatabase.driver(
 # Queries
 
 queries = {
+
     "count_nodes": """
     MATCH (n)
     RETURN count(n)
@@ -52,6 +53,11 @@ queries = {
     LIMIT 1
     """,
 
+    "indexed_lookup": """
+    MATCH (u:User {id: 100})
+    RETURN u
+    """,
+
     "aggregation": """
     MATCH (n)
     RETURN count(n)
@@ -64,13 +70,25 @@ print("Neo4j benchmark started...\n")
 
 with driver.session(database="neo4j") as session:
 
+    # Warm-up
+
+    print("Running warm-up queries...\n")
+
+    for query in queries.values():
+
+        for _ in range(10):
+
+            session.run(query).data()
+
+    # Benchmark
+
     for name, query in queries.items():
 
         latencies = []
 
         try:
 
-            for i in range(100):
+            for _ in range(100):
 
                 start_time = time.time()
 

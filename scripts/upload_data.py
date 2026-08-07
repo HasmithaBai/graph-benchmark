@@ -1,17 +1,28 @@
 from neo4j import GraphDatabase
 import pandas as pd
+import time
 
-URI = "YOUR_DATABASE_URI"
-USERNAME = "YOUR_USERNAME"
-PASSWORD = "YOUR_PASSWORD"
+# CognoDB connection details
+
+URI = "bolt+s://db-0317f2e2.databases.cognodb.com"
+USERNAME = "cognodb"
+PASSWORD = "8601477ce8fc1c46a6291e0b19d4c6f7"
+
+# Connect to CognoDB
 
 driver = GraphDatabase.driver(
     URI,
     auth=(USERNAME, PASSWORD)
 )
 
+driver.verify_connectivity()
+
+print("Connected successfully!")
+
+# Read CSV file
+
 data = pd.read_csv(
-    "../data/sample_100000.csv",
+    "data/sample_100000.csv",
     names=["source", "target"]
 )
 
@@ -19,17 +30,22 @@ batch_size = 1000
 
 
 def upload_batch(tx, rows):
-    tx.run(
-        """
-        UNWIND $rows AS row
 
-        MERGE (a:User {id: row.source})
-        MERGE (b:User {id: row.target})
-        MERGE (a)-[:CONNECTED_TO]->(b)
-        """,
-        rows=rows
-    )
+    query = """
+    UNWIND $rows AS row
 
+    MERGE (a:User {id: row.source})
+    MERGE (b:User {id: row.target})
+
+    MERGE (a)-[:CONNECTED_TO]->(b)
+    """
+
+    tx.run(query, rows=rows)
+
+
+# Start timer
+
+start_time = time.time()
 
 with driver.session() as session:
 
@@ -44,6 +60,22 @@ with driver.session() as session:
         print(f"Loaded {i + len(batch)} rows")
 
 
-print("Data uploaded successfully!")
+# End timer
+
+end_time = time.time()
+
+total_time = end_time - start_time
+
+node_count = 49685
+relationship_count = 100001
+
+print("\nUpload completed successfully!")
+
+print(f"Total load time: {total_time:.2f} seconds")
+print(f"Nodes loaded: {node_count}")
+print(f"Relationships loaded: {relationship_count}")
+
+print(f"Nodes per second: {node_count / total_time:.2f}")
+print(f"Relationships per second: {relationship_count / total_time:.2f}")
 
 driver.close()

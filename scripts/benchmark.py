@@ -6,58 +6,64 @@ import os
 
 # Connection details
 
-URI = "YOUR_COGNODB_URI"
-USERNAME = "YOUR_COGNODB_USERNAME"
-PASSWORD = "YOUR_COGNODB_PASSWORD"
+URI = "bolt+s://db-0317f2e2.databases.cognodb.com"
+USERNAME = "cognodb"
+PASSWORD = "8601477ce8fc1c46a6291e0b19d4c6f7"
 
 driver = GraphDatabase.driver(
     URI,
     auth=(USERNAME, PASSWORD)
 )
 
+driver.verify_connectivity()
+
+print("Connected successfully!")
+
 # Queries
 
 queries = {
+
     "count_nodes": """
-    MATCH (n)
+    MATCH (n:User)
     RETURN count(n)
     """,
 
     "count_relationships": """
-    MATCH ()-[r]->()
+    MATCH ()-[r:CONNECTED_TO]->()
     RETURN count(r)
     """,
 
     "one_hop": """
-    MATCH (u)-[]->(v)
-    WHERE id(u) = 2
+    MATCH (u:User {id: 100})-[:CONNECTED_TO]->(v)
     RETURN v
     LIMIT 20
     """,
 
     "two_hop": """
-    MATCH (u)-[]->()-[]->(v)
-    WHERE id(u) = 2
+    MATCH (u:User {id: 100})-[:CONNECTED_TO]->()-[:CONNECTED_TO]->(v)
     RETURN v
     LIMIT 20
     """,
 
     "three_hop": """
-    MATCH (u)-[]->()-[]->()-[]->(v)
-    WHERE id(u) = 2
+    MATCH (u:User {id: 100})-[:CONNECTED_TO]->()-[:CONNECTED_TO]->()-[:CONNECTED_TO]->(v)
     RETURN count(v)
-    LIMIT 5
     """,
 
     "point_lookup": """
-    MATCH (n)
-    RETURN n
+    MATCH (u:User {id: 100})
+    RETURN u
     LIMIT 1
     """,
 
+    "indexed_lookup": """
+    MATCH (u:User {id: 100})
+    RETURN u
+    """,
+
     "aggregation": """
-    MATCH (n)
-    RETURN count(n)
+    MATCH (u:User)
+    RETURN count(u)
     """
 }
 
@@ -67,13 +73,25 @@ print("Benchmark started...\n")
 
 with driver.session() as session:
 
+    # Warm-up
+
+    print("Running warm-up queries...\n")
+
+    for query in queries.values():
+
+        for _ in range(5):
+
+            session.run(query).data()
+
+    # Benchmark
+
     for name, query in queries.items():
 
         latencies = []
 
         try:
 
-            for i in range(100):
+            for i in range(20):
 
                 start_time = time.time()
 
@@ -112,7 +130,11 @@ with open(output_file, "w", newline="") as file:
 
     writer = csv.writer(file)
 
-    writer.writerow(["Query", "P50_ms", "P95_ms"])
+    writer.writerow([
+        "Query",
+        "P50_ms",
+        "P95_ms"
+    ])
 
     writer.writerows(results)
 

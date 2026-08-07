@@ -2,6 +2,7 @@ from neo4j import GraphDatabase
 import time
 import csv
 import numpy as np
+import os
 
 # Memgraph connection
 
@@ -12,6 +13,7 @@ driver = GraphDatabase.driver(URI)
 # Queries
 
 queries = {
+
     "count_nodes": """
     MATCH (n)
     RETURN count(n)
@@ -24,28 +26,31 @@ queries = {
 
     "one_hop": """
     MATCH (u)-[]->(v)
-    WHERE u.id = 2
     RETURN v
     LIMIT 20
     """,
 
     "two_hop": """
     MATCH (u)-[]->()-[]->(v)
-    WHERE u.id = 2
     RETURN v
     LIMIT 20
     """,
 
     "three_hop": """
     MATCH (u)-[]->()-[]->()-[]->(v)
-    WHERE u.id = 2
     RETURN count(v)
+    LIMIT 5
     """,
 
     "point_lookup": """
     MATCH (n)
     RETURN n
     LIMIT 1
+    """,
+
+    "indexed_lookup": """
+    MATCH (u:User {id: 100})
+    RETURN u
     """,
 
     "aggregation": """
@@ -56,9 +61,21 @@ queries = {
 
 results = []
 
-print("Memgraph benchmark started...")
+print("Memgraph benchmark started...\n")
 
 with driver.session() as session:
+
+    # Warm-up
+
+    print("Running warm-up queries...\n")
+
+    for query in queries.values():
+
+        for _ in range(10):
+
+            session.run(query).data()
+
+    # Benchmark
 
     for name, query in queries.items():
 
@@ -66,7 +83,7 @@ with driver.session() as session:
 
         try:
 
-            for i in range(100):
+            for _ in range(100):
 
                 start_time = time.time()
 

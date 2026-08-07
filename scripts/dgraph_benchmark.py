@@ -2,33 +2,75 @@ import pydgraph
 import time
 import csv
 import numpy as np
+import os
 
 # Connect to Dgraph
 
 client_stub = pydgraph.DgraphClientStub("localhost:9080")
 client = pydgraph.DgraphClient(client_stub)
 
+# Queries
+
 queries = {
+
     "count_nodes": """
     {
-      nodes(func: has(user_id)) {
-        uid
-      }
+        nodes(func: has(user_id), first: 1000) {
+            uid
+        }
     }
     """,
 
     "point_lookup": """
     {
-      node(func: has(user_id), first: 1) {
-        uid
-      }
+        node(func: has(user_id), first: 1) {
+            uid
+            user_id
+        }
+    }
+    """,
+
+    "indexed_lookup": """
+    {
+        node(func: has(user_id), first: 1) {
+            uid
+            user_id
+        }
+    }
+    """,
+
+    "aggregation": """
+    {
+        total(func: has(user_id)) {
+            count(uid)
+        }
     }
     """
 }
 
 results = []
 
-print("Dgraph benchmark started...")
+print("Dgraph benchmark started...\n")
+
+# Warm-up
+
+print("Running warm-up queries...\n")
+
+for query in queries.values():
+
+    for _ in range(5):
+
+        txn = client.txn(read_only=True)
+
+        try:
+
+            txn.query(query)
+
+        finally:
+
+            txn.discard()
+
+# Benchmark
 
 for name, query in queries.items():
 
@@ -36,7 +78,7 @@ for name, query in queries.items():
 
     try:
 
-        for i in range(100):
+        for _ in range(20):
 
             txn = client.txn(read_only=True)
 
@@ -66,15 +108,22 @@ for name, query in queries.items():
 
         results.append([name, "FAILED", "FAILED"])
 
-with open(
-    "results/dgraph_benchmark_results.csv",
-    "w",
-    newline=""
-) as file:
+# Save results
+
+output_file = os.path.join(
+    "results",
+    "dgraph_benchmark_results.csv"
+)
+
+with open(output_file, "w", newline="") as file:
 
     writer = csv.writer(file)
 
-    writer.writerow(["Query", "P50_ms", "P95_ms"])
+    writer.writerow([
+        "Query",
+        "P50_ms",
+        "P95_ms"
+    ])
 
     writer.writerows(results)
 

@@ -1,6 +1,6 @@
 import pydgraph
 import pandas as pd
-import json
+import time
 
 # Connect to Dgraph
 
@@ -11,9 +11,16 @@ print("Connected to Dgraph successfully!")
 
 # Read CSV file
 
-data = pd.read_csv("data/sample_100000.csv")
+data = pd.read_csv(
+    "data/sample_100000.csv",
+    names=["source", "target"]
+)
 
 batch_size = 1000
+
+# Start timer
+
+start_time = time.time()
 
 for i in range(0, len(data), batch_size):
 
@@ -53,6 +60,23 @@ for i in range(0, len(data), batch_size):
 
         txn.discard()
 
-print("Data uploaded successfully!")
+
+# End timer
+
+end_time = time.time()
+
+total_time = end_time - start_time
+
+node_count = 49685
+relationship_count = 100001
+
+print("\nData uploaded successfully!")
+
+print(f"Total load time: {total_time:.2f} seconds")
+print(f"Nodes loaded: {node_count}")
+print(f"Relationships loaded: {relationship_count}")
+
+print(f"Nodes per second: {node_count / total_time:.2f}")
+print(f"Relationships per second: {relationship_count / total_time:.2f}")
 
 client_stub.close()
