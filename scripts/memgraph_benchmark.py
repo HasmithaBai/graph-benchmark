@@ -66,7 +66,7 @@ with driver.session() as session:
 
         try:
 
-            for i in range(10):
+            for i in range(100):
 
                 start_time = time.time()
 

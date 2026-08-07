@@ -2,12 +2,13 @@ from neo4j import GraphDatabase
 import time
 import csv
 import numpy as np
+import os
 
 # Connection details
 
-URI = "YOUR_COGNODB_URI"
-USERNAME = "YOUR_COGNODB_USERNAME"
-PASSWORD = "YOUR_COGNODB_PASSWORD"
+URI = "bolt+s://db-0317f2e2.databases.cognodb.com"
+USERNAME = "cognodb"
+PASSWORD = "8601477ce8fc1c46a6291e0b19d4c6f7"
 
 driver = GraphDatabase.driver(
     URI,
@@ -62,7 +63,7 @@ queries = {
 
 results = []
 
-print("Benchmark started...")
+print("Benchmark started...\n")
 
 with driver.session() as session:
 
@@ -72,7 +73,7 @@ with driver.session() as session:
 
         try:
 
-            for i in range(10):
+            for i in range(100):
 
                 start_time = time.time()
 
@@ -89,31 +90,29 @@ with driver.session() as session:
 
             print(f"{name}: p50 = {p50} ms, p95 = {p95} ms")
 
-            results.append(
-                [name, p50, p95]
-            )
+            results.append([name, p50, p95])
 
-        except Exception:
+        except Exception as e:
 
             print(f"{name}: FAILED")
+            print(e)
 
-            results.append(
-                [name, "FAILED", "FAILED"]
-            )
+            results.append([name, "FAILED", "FAILED"])
 
 # Save results
 
-with open(
-    "../results/benchmark_results.csv",
-    "w",
-    newline=""
-) as file:
+output_file = os.path.join(
+    os.path.dirname(__file__),
+    "..",
+    "results",
+    "benchmark_results.csv"
+)
+
+with open(output_file, "w", newline="") as file:
 
     writer = csv.writer(file)
 
-    writer.writerow(
-        ["Query", "P50_ms", "P95_ms"]
-    )
+    writer.writerow(["Query", "P50_ms", "P95_ms"])
 
     writer.writerows(results)
 

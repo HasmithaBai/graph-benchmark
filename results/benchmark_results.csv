@@ -1,8 +1,8 @@
-"Query,P50_ms,P95_ms"
-"count_nodes,353.07,927.00"
-"count_relationships,249.41,286.87"
-"one_hop,887.04,1130.56"
-"two_hop,11074.16,11539.73"
-"three_hop,FAILED,FAILED"
-"point_lookup,247.06,318.55"
-"aggregation,349.64,417.66"
+Query,P50_ms,P95_ms
+count_nodes,306.95,388.79
+count_relationships,306.54,363.97
+one_hop,306.79,363.52
+two_hop,306.98,364.07
+three_hop,304.64,364.25
+point_lookup,258.19,362.5
+aggregation,250.47,327.85

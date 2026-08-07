@@ -2,12 +2,13 @@ from neo4j import GraphDatabase
 import time
 import csv
 import numpy as np
+import os
 
 # Neo4j connection details
 
-URI = "YOUR_NEO4J_URI"
-USERNAME = "YOUR_NEO4J_USERNAME"
-PASSWORD = "YOUR_NEO4J_PASSWORD"
+URI = "neo4j+s://109ab702.databases.neo4j.io"
+USERNAME = "neo4j"
+PASSWORD = "zFU2P5TL00UPI-VE1SMfbkBul80wmx31RcaCuocCqHE"
 
 driver = GraphDatabase.driver(
     URI,
@@ -29,21 +30,18 @@ queries = {
 
     "one_hop": """
     MATCH (u)-[]->(v)
-    WHERE id(u) = 2
     RETURN v
     LIMIT 20
     """,
 
     "two_hop": """
     MATCH (u)-[]->()-[]->(v)
-    WHERE id(u) = 2
     RETURN v
     LIMIT 20
     """,
 
     "three_hop": """
     MATCH (u)-[]->()-[]->()-[]->(v)
-    WHERE id(u) = 2
     RETURN count(v)
     LIMIT 5
     """,
@@ -62,7 +60,7 @@ queries = {
 
 results = []
 
-print("Neo4j benchmark started...")
+print("Neo4j benchmark started...\n")
 
 with driver.session(database="neo4j") as session:
 
@@ -72,7 +70,7 @@ with driver.session(database="neo4j") as session:
 
         try:
 
-            for i in range(10):
+            for i in range(100):
 
                 start_time = time.time()
 
@@ -94,22 +92,24 @@ with driver.session(database="neo4j") as session:
         except Exception as e:
 
             print(f"{name}: FAILED")
-
             print(e)
 
             results.append([name, "FAILED", "FAILED"])
 
-with open(
-    "results/neo4j_benchmark_results.csv",
-    "w",
-    newline=""
-) as file:
+# Save results
+
+output_file = os.path.join(
+    os.path.dirname(__file__),
+    "..",
+    "results",
+    "neo4j_benchmark_results.csv"
+)
+
+with open(output_file, "w", newline="") as file:
 
     writer = csv.writer(file)
 
-    writer.writerow(
-        ["Query", "P50_ms", "P95_ms"]
-    )
+    writer.writerow(["Query", "P50_ms", "P95_ms"])
 
     writer.writerows(results)
 

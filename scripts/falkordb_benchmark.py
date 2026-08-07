@@ -44,7 +44,7 @@ for name, query in queries.items():
 
     try:
 
-        for i in range(10):
+        for i in range(100):
 
             start = time.time()
 
