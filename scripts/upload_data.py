@@ -4,9 +4,9 @@ import time
 
 # CognoDB connection details
 
-URI = "bolt+s://db-0317f2e2.databases.cognodb.com"
-USERNAME = "cognodb"
-PASSWORD = "8601477ce8fc1c46a6291e0b19d4c6f7"
+set DATABASE_URI=bolt+s://db-0317f2e2.databases.cognodb.com
+set DATABASE_USERNAME=cognodb
+set DATABASE_PASSWORD=YOUR_COGNODB_PASSWORD
 
 # Connect to CognoDB
 
