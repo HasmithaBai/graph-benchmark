@@ -6,9 +6,9 @@ import os
 
 # Connection details
 
-URI = "bolt+s://db-0317f2e2.databases.cognodb.com"
-USERNAME = "cognodb"
-PASSWORD = "8601477ce8fc1c46a6291e0b19d4c6f7"
+URI = "YOUR_NEO4J_URI"
+USERNAME = "YOUR_NEO4J_USERNAME"
+PASSWORD = "YOUR_NEO4J_PASSWORD"
 
 driver = GraphDatabase.driver(
     URI,
